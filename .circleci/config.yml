@@ -1,15 +1,12 @@
 version: 2.1
 
 workflows:
-  version: 2
-  save_hello_world_output:
+  my_workflow:
     jobs:
       - save_hello_world_output
-  print_output_file:
-    requires:
-      - save_hello_world_output
-    jobs:
       - print_output_file
+          requires:
+            - save_hello_world_output
 jobs:
   save_hello_world_output:
     docker:
