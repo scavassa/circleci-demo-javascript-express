@@ -2,41 +2,32 @@ version: 2.1
 
 workflows:
   version: 2
-  build:
+  save_hello_world_output:
     jobs:
-      - build
-
+      - save_hello_world_output
+  print_output_file:
+    jobs:
+      - print_output_file
 jobs:
-  build:
-    working_directory: ~/mern-starter
+  save_hello_world_output:
     docker:
-      - image: circleci/node:10.16.3
-      - image: mongo:4.2.0
+      - image: circleci/ubuntu-server
     steps:
-      - checkout
+      - checkout # Special step to checkout your source code
       - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@5'
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: install-npm-wee
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          name: echo-content
+          command: 'echo "TESTE PERSISTÊNCIA" > /tmp/output.txt'
+      
+      - persist_to_workspace:
+          root: /tmp
           paths:
-            - ./node_modules
+            - "output.txt"
+  print_output_file:
+    docker:
+      - image: circleci/ubuntu-server
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
-          name: test
-          command: npm test
-      - run:
-          name: code-coverage
-          command: './node_modules/.bin/nyc report --reporter=text-lcov'
-      - store_artifacts:
-          path: test-results.xml
-          prefix: tests
-      - store_artifacts:
-          path: coverage
-          prefix: coverage
-      - store_test_results:
-          path: test-results.xml
+      name: cat-content
+      command: 'cat /tmp/workspace/output.txt'
