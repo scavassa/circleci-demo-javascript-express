@@ -12,11 +12,12 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
+      - fail_test
         
 jobs:
   save_hello_world_output:
     docker:
-      - image: circleci/ubuntu-server
+      - image: circleci/node:13.8.0
     steps:
       - run:
           name: echo-content
@@ -27,9 +28,10 @@ jobs:
           paths:
             - output.txt
       - print_pipeline_id
+
   print_output_file:
     docker:
-      - image: circleci/ubuntu-server
+      - image: circleci/node:13.8.0
     steps:
       - attach_workspace:
           at: /tmp
@@ -37,3 +39,14 @@ jobs:
           name: cat-content
           command: 'cat /tmp/output.txt'
       - print_pipeline_id
+  
+  fail_test:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: return 1
+      - run: 
+          name: Print Failed Testes
+          command: echo "O teste falhouuuuu!!!!"
+          when: on_fail
+      
