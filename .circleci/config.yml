@@ -27,7 +27,7 @@ jobs:
           root: /tmp
           paths:
             - output.txt
-      - print_pipeline_id:
+      - print_pipeline_id
   print_output_file:
     docker:
       - image: circleci/ubuntu-server
