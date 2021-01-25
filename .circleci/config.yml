@@ -1,4 +1,10 @@
 version: 2.1
+commands:
+  print_pipeline_id:
+    description: "Prints Workflow ID"
+    steps:
+      - run: echo $CIRCLE_WORKFLOW_ID
+
 
 workflows:
   my_workflow:
@@ -7,6 +13,7 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
+        
 jobs:
   save_hello_world_output:
     docker:
@@ -20,6 +27,7 @@ jobs:
           root: /tmp
           paths:
             - output.txt
+      - print_pipeline_id:
   print_output_file:
     docker:
       - image: circleci/ubuntu-server
@@ -29,3 +37,4 @@ jobs:
       - run:
           name: cat-content
           command: 'cat /tmp/output.txt'
+      - print_pipeline_id:
